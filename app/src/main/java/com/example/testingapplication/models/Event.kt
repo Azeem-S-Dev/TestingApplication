@@ -8,7 +8,7 @@ data class Event(
     val classifications: List<ClassificationX>,
     val dates: Dates,
     val id: String,
-    val images: List<ImageXX>,
+    val images: List<ImageX>,
     val locale: String,
     val name: String,
     val priceRanges: List<PriceRange>,

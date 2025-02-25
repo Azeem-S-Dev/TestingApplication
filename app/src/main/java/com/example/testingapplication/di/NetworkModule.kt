@@ -30,7 +30,7 @@ class NetworkModule {
         converterFactory: Converter.Factory
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://restcountries.com")
+            .baseUrl("https://app.ticketmaster.com/discovery/v2/")
             .client(okHttpClient)
             .addConverterFactory(converterFactory)
             .build()

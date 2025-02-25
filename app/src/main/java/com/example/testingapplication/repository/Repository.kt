@@ -1,23 +1,25 @@
 package com.example.testingapplication.repository
 
-import com.example.testingapplication.models.Country
+import com.example.testingapplication.models.EventsData
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
 class Repository @Inject constructor(private val apiService: ApiService) {
 
-    suspend fun fetchAllCountries(): List<Country> {
+    suspend fun getAllEvents(
+        callBack: (isSuccess: Boolean, eventsData: EventsData?, message: String) -> Unit
+    ) {
         try {
-            val response = apiService.getAllCountries()
+            val response = apiService.getAllEvents()
             if (response.isSuccessful) {
-                return response.body() ?: emptyList()
+                callBack(true, response.body(), "")
             } else {
-                throw Exception("Error: ${response.code()} ${response.message()}")
+                val err = response.errorBody()
+                callBack(false, null, response.message())
+//                throw Exception("Error: ${response.code()} ${response.message()}")
             }
         } catch (e: Exception) {
             println("API error =>  ${e.message}")  // Pass the exception to be handled later
-            return listOf()
         }
     }
 

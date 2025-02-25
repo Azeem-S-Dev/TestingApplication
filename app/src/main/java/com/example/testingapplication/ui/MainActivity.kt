@@ -20,15 +20,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        ImageLoader.get().load("https://goo.gl/gEgYUd").into(binding.imageView)
-
-        viewModel.countriesLiveData.observe(this, Observer { countries ->
-            if (countries.isNotEmpty()) {
-                binding.textView.text = (countries.joinToString("\n\n") { "${it.name.common} - ${it.capital?.joinToString() ?: "No Capital"}" })
-            }
+        viewModel.eventsLiveData.observe(this, Observer { events ->
+            println("Response events 1 name: ${events._embedded.events[0].name}")
         })
 
-        viewModel.getAllCountries()
+        viewModel.getAllEvents()
     }
 
 }

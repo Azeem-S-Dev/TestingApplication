@@ -6,7 +6,7 @@ data class Attraction(
     val classifications: List<ClassificationX>,
     val externalLinks: ExternalLinks,
     val id: String,
-    val images: List<ImageXX>,
+    val images: List<ImageX>,
     val locale: String,
     val name: String,
     val test: Boolean,
