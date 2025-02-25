@@ -1,12 +1,16 @@
 package com.example.testingapplication.repository
 
-import com.example.testingapplication.models.Country
 import com.example.testingapplication.models.EventsData
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface ApiService {
 
-    @GET("events.json?page=1&size=20&apikey=DW0E98NrxUIfDDtNN7ijruVSm60ryFLX")
-    suspend fun getAllEvents(): Response<EventsData>
+    @GET("events.json")
+    suspend fun getAllEvents(
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("apikey") apikey: String
+    ): Response<EventsData>
 }

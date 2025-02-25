@@ -20,13 +20,21 @@ class MainViewModel @Inject constructor(
     private val _eventsLiveData = MutableLiveData<EventsData>()
     val eventsLiveData: LiveData<EventsData> get() = _eventsLiveData
 
+    private val _errorLiveData = MutableLiveData<String>()
+    val errorLiveData: LiveData<String> get() = _errorLiveData
+
     fun getAllEvents() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getAllEvents() { isSuccess, eventsData, message ->
+            repository.getAllEvents(
+                page = 0,
+                size = 20
+            ) { isSuccess, eventsData, message ->
                 if (isSuccess) {
                     eventsData?.let {
                         _eventsLiveData.postValue(it)
                     }
+                } else {
+                    _errorLiveData.postValue(message) // Post error message
                 }
             }
 

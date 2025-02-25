@@ -1,6 +1,7 @@
 package com.example.testingapplication.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,10 @@ class MainActivity : AppCompatActivity() {
         viewModel.eventsLiveData.observe(this, Observer { events ->
             println("Response events 1 name: ${events._embedded.events[0].name}")
         })
+
+        viewModel.errorLiveData.observe(this) { errorMessage ->
+            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+        }
 
         viewModel.getAllEvents()
     }

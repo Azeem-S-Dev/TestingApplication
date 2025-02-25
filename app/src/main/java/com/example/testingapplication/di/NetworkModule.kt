@@ -1,10 +1,12 @@
 package com.example.testingapplication.di
 
-import android.text.TextUtils
+import android.content.Context
 import com.example.testingapplication.repository.ApiService
+import com.example.testingapplication.utils.NetworkUtil
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -13,16 +15,16 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
-import javax.inject.Singleton
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
 
 @Module
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
+
+    @Provides
+    fun provideNetworkUtil(@ApplicationContext context: Context): NetworkUtil {
+        return NetworkUtil(context)
+    }
 
     @Provides
     fun provideRetrofit(
