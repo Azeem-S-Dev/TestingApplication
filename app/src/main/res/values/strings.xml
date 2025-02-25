@@ -6,6 +6,6 @@
     <string name="event_name">Event Name</string>
     <string name="event_image">Event Image</string>
     <string name="no_data_image">No data image</string>
-    <string name="no_data_available">No data available</string>
+    <string name="no_data_available">No data available at the moment.</string>
     <string name="retry">Retry</string>
 </resources>

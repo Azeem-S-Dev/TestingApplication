@@ -2,6 +2,7 @@ package com.example.testingapplication.ui
 
 import android.os.Bundle
 import android.view.View
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
     private lateinit var eventAdapter: EventsListAdapter
+    private var isSearching = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,14 +28,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setupRecyclerView()
 
-        viewModel.eventsLiveData.observe(this, Observer { eventsData ->
-            if (eventsData?._embedded?.events?.isNotEmpty() == true) {
+        viewModel.eventsLiveData.observe(this, Observer { eventsList ->
+            if (eventsList.isNotEmpty()) {
                 binding.recyclerView.visibility = View.VISIBLE
                 binding.emptyStateLayout.visibility = View.GONE
-                eventAdapter.updateData(eventsData._embedded.events)
+                eventAdapter.updateData(eventsList)
             } else {
                 binding.recyclerView.visibility = View.GONE
                 binding.emptyStateLayout.visibility = View.VISIBLE
+
+                if (isSearching) {
+                    binding.errorText.text = "No results found for your search."
+                    binding.retryButton.visibility = View.GONE
+                } else {
+                    binding.errorText.text = "No events available at the moment."
+                    binding.retryButton.visibility = View.VISIBLE
+                }
             }
             binding.progressBar.visibility = View.GONE
         })
@@ -51,6 +61,24 @@ class MainActivity : AppCompatActivity() {
             binding.progressBar.visibility = View.VISIBLE
             viewModel.getAllEvents()
         }
+
+        binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    isSearching = it.isNotEmpty()
+                    viewModel.searchEvents(it)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    isSearching = it.isNotEmpty()
+                    viewModel.searchEvents(it)
+                }
+                return true
+            }
+        })
 
         binding.progressBar.visibility = View.VISIBLE
         viewModel.getAllEvents()
