@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="6dp">
+    android:layout_height="wrap_content"
+    android:padding="5dp">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="4dp"
         app:cardCornerRadius="6dp"
+        app:cardElevation="3dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -22,12 +25,25 @@
                 android:id="@+id/eventImg"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@color/grey"
+                android:background="@color/lightGrey"
                 android:contentDescription="@string/event_image"
-                app:layout_constraintWidth_percent="0.29"
+                android:scaleType="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.29" />
+
+            <ProgressBar
+                android:id="@+id/imageProgressBar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@id/eventImg"
+                app:layout_constraintEnd_toEndOf="@id/eventImg"
+                app:layout_constraintStart_toStartOf="@id/eventImg"
+                app:layout_constraintTop_toTopOf="@id/eventImg" />
 
             <TextView
                 android:id="@+id/eventTitle"
@@ -35,12 +51,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="7dp"
                 android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:text="@string/event_name"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:maxLines="2"
-                android:ellipsize="end"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/eventImg"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -49,13 +65,13 @@
                 android:id="@+id/eventDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:layout_marginHorizontal="7dp"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/jan_21"
                 android:textColor="@color/grey"
                 android:textSize="13sp"
-                android:maxLines="1"
-                android:ellipsize="end"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/eventImg"
                 app:layout_constraintTop_toBottomOf="@+id/eventTitle" />
@@ -64,13 +80,13 @@
                 android:id="@+id/eventLocation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
                 android:layout_marginHorizontal="7dp"
+                android:layout_marginTop="3dp"
+                android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@string/webster_hall"
                 android:textColor="@color/grey"
                 android:textSize="13sp"
-                android:ellipsize="end"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/eventImg"
                 app:layout_constraintTop_toBottomOf="@+id/eventDate" />

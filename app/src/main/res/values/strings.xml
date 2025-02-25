@@ -1,8 +1,11 @@
 <resources>
-    <string name="app_name">TestingApplication</string>
+    <string name="app_name">Event Test App</string>
     <string name="new_york">New York</string>
     <string name="webster_hall">Webster Hall</string>
     <string name="jan_21">Jan 21</string>
     <string name="event_name">Event Name</string>
     <string name="event_image">Event Image</string>
+    <string name="no_data_image">No data image</string>
+    <string name="no_data_available">No data available</string>
+    <string name="retry">Retry</string>
 </resources>
