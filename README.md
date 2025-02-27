@@ -27,21 +27,6 @@ Unit tests are located in _app/src/test/java/com/example/testingapplication_. To
   ./gradlew test
 
 
-**Project Structure**
-
-=> data
-    _dao_              # Room DAO for local storage
-    _database_         # Room database configuration
-    _models_           # Data models for API responses
-    _converters_       # Type converters for Room
-=> di                  # Hilt dependency injection modules
-=> repository          # API and database interaction logic
-=> ui                  # Activity and ViewModel
-    _adapter_          # RecyclerView adapter for event display
-    _MainActivity.kt_  # Main UI component
-=> utils               # Utility classes (e.g., NetworkUtil)
-
-
 **Technical Details**
 _Architecture:_ MVVM (Model-View-ViewModel) with Repository pattern.
 _Dependency Injection:_ Hilt for managing dependencies.
