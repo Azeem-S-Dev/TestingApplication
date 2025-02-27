@@ -1,19 +1,23 @@
 package com.example.testingapplication.ui.adapter
 
+import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.example.testingapplication.R
 import com.example.testingapplication.databinding.EventCardBinding
-import com.example.testingapplication.models.Event
+import com.example.testingapplication.data.models.Event
+import com.example.testingapplication.data.models.ImageX
 
 class EventsListAdapter(private var eventList: List<Event>) : RecyclerView.Adapter<EventsListAdapter.EventViewHolder>() {
 
@@ -39,12 +43,62 @@ class EventsListAdapter(private var eventList: List<Event>) : RecyclerView.Adapt
             }
 
             binding.imageProgressBar.visibility = View.VISIBLE
-            loadImage(binding, event.images.getOrNull(0)?.url, event)
+            loadImage(binding, binding.root.context, event.images) { isSuccess ->
+                if (isSuccess) {
+                    binding.eventImage.scaleType = ImageView.ScaleType.CENTER
+                    binding.imageProgressBar.visibility = View.GONE
+                } else {
+                    binding.imageProgressBar.visibility = View.GONE
+                    binding.eventImage.scaleType = ImageView.ScaleType.CENTER_INSIDE
+                }
+            }
         }
     }
+    // Function to select the best image based on device screen size
+    fun selectBestImage(images: List<ImageX>?, context: Context, displayMetrics: DisplayMetrics?): String? {
+        if (images.isNullOrEmpty()) return null
 
-    fun loadImage(binding: EventCardBinding, imageUrl: String?, event: Event) {
-        Glide.with(binding.root.context)
+        // Get device screen dimensions
+        var receivedMetrics = displayMetrics
+        if (receivedMetrics == null) {
+            receivedMetrics = context.resources.displayMetrics
+        }
+        val screenWidth = receivedMetrics!!.widthPixels
+        val screenHeight = receivedMetrics.heightPixels
+        val screenAspectRatio = screenWidth.toFloat() / screenHeight.toFloat()
+
+        // Target aspect ratio (e.g., 16:9 = 1.777, 3:2 = 1.5, 4:3 = 1.333)
+        val targetAspectRatios = mapOf(
+            "16_9" to 16f / 9f,
+            "3_2" to 3f / 2f,
+            "4_3" to 4f / 3f
+        )
+
+        // Filter images by closest aspect ratio and sufficient resolution
+        val suitableImages = images.filter { image ->
+            val imageAspectRatio = targetAspectRatios[image.ratio] ?: return@filter false
+            // Check if resolution is reasonable (e.g., at least half screen width, but not excessively large)
+            image.width >= screenWidth / 2 && image.width <= screenWidth * 2 &&
+                    kotlin.math.abs(imageAspectRatio - screenAspectRatio) < 0.3 // Tolerance for aspect ratio
+        }.sortedByDescending { it.width * it.height } // Sort by resolution (highest first)
+
+        // Return the URL of the best match, or fallback to the highest resolution 16:9 if no match
+        return suitableImages.firstOrNull()?.url ?: images
+            .filter { it.ratio == "16_9" }
+            .maxByOrNull { it.width * it.height }?.url
+    }
+
+    fun loadImage(
+        binding: EventCardBinding,
+        context: Context,
+        images: List<ImageX>,
+        requestManager: RequestManager = Glide.with(context),
+        callBack: (isSuccess: Boolean) -> Unit
+    ) {
+        val displayMetrics = context.resources.displayMetrics
+        val imageUrl = selectBestImage(images, context, displayMetrics)
+
+        requestManager
             .load(imageUrl)
             .error(R.drawable.error_image2)
             .listener(object : RequestListener<Drawable> {
@@ -54,12 +108,7 @@ class EventsListAdapter(private var eventList: List<Event>) : RecyclerView.Adapt
                     target: Target<Drawable>?,
                     isFirstResource: Boolean
                 ): Boolean {
-                    if (event.images.size > 1 && model == event.images[0].url) {
-                        loadImage(binding, event.images[1].url, event)
-                    } else {
-                        binding.imageProgressBar.visibility = View.GONE
-                        binding.eventImg.scaleType = ImageView.ScaleType.CENTER_INSIDE
-                    }
+                    callBack(false)
                     return false
                 }
 
@@ -70,12 +119,11 @@ class EventsListAdapter(private var eventList: List<Event>) : RecyclerView.Adapt
                     dataSource: DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
-                    binding.eventImg.scaleType = ImageView.ScaleType.CENTER
-                    binding.imageProgressBar.visibility = View.GONE
+                    callBack(true)
                     return false
                 }
             })
-            .into(binding.eventImg)
+            .into(binding.eventImage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {

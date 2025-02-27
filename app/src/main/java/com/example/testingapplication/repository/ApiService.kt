@@ -1,6 +1,6 @@
 package com.example.testingapplication.repository
 
-import com.example.testingapplication.models.EventsData
+import com.example.testingapplication.data.models.EventsData
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

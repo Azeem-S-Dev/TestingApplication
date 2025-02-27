@@ -2,23 +2,31 @@ package com.example.testingapplication.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.testingapplication.models.Country
-import com.example.testingapplication.models.Event
-import com.example.testingapplication.models.EventsData
+import com.example.testingapplication.data.dao.EventDao
+import com.example.testingapplication.data.models.Country
+import com.example.testingapplication.data.models.Event
+import com.example.testingapplication.data.models.EventsData
 import com.example.testingapplication.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: Repository
-): ViewModel() {
+    private val repository: Repository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : ViewModel() {
 
-    private val _originalEventsListData = MutableLiveData<EventsData>()
+    var _originalEventsListData: EventsData? = null
     private val _eventsLiveData = MutableLiveData<List<Event>>()
     val eventsLiveData: LiveData<List<Event>> get() = _eventsLiveData
 
@@ -26,15 +34,15 @@ class MainViewModel @Inject constructor(
     val errorLiveData: MutableLiveData<String?> get() = _errorLiveData
 
     fun getAllEvents() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             repository.getAllEvents(
                 page = 0,
-                size = 20
+                size = 40
             ) { isSuccess, eventsData, message ->
                 if (isSuccess) {
                     eventsData?.let {
-                        _originalEventsListData.postValue(it)
                         _eventsLiveData.postValue(it._embedded.events)
+                        _originalEventsListData = it
                         _errorLiveData.postValue(null)
                     }
                 } else {
@@ -46,7 +54,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun searchEvents(query: String) {
-        val originalList = _originalEventsListData.value?._embedded?.events ?: emptyList()
+        val originalList = _originalEventsListData?._embedded?.events ?: emptyList()
         val filteredList = if (query.isEmpty()) {
             originalList
         } else {
